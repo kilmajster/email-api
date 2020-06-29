@@ -23,7 +23,7 @@ public class EmailMessageApi {
     @PostMapping
     public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newMessage) {
         return mapToDomainObject()
-                .andThen(saveToDabase())
+//                .andThen(saveToDabase())
                 .andThen(returnId())
                 .apply(newMessage);
     }

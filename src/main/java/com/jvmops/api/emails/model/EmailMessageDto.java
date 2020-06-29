@@ -19,7 +19,6 @@ public class EmailMessageDto {
     @NotEmpty(message = "Missing sender")
     String sender;
 
-    @NotEmpty(message = "Missing email recipients")
     Set<@Email(message = "There is an invalid email address among recipients") String> recipients;
 
     @NotEmpty(message = "Email topic must be provided")

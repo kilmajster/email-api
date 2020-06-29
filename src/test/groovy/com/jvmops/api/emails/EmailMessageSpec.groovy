@@ -70,7 +70,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email recipients can't be null"() {
+    def "Email recipients might be null"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -82,10 +82,10 @@ class EmailMessageSpec extends Specification {
         def response = restTemplate.postForEntity(emailsEndpoint, email, EmailMessageDto)
 
         then:
-        response.statusCode.is4xxClientError()
+        response.statusCode.is2xxSuccessful()
     }
 
-    def "Email recipients can't be an empty set"() {
+    def "Email recipients may be an empty set"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -98,7 +98,7 @@ class EmailMessageSpec extends Specification {
         def response = restTemplate.postForEntity(emailsEndpoint, email, EmailMessageDto)
 
         then:
-        response.statusCode.is4xxClientError()
+        response.statusCode.is2xxSuccessful()
     }
 
     def "Email recipients must contain valid email addresses"() {
@@ -117,7 +117,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email topic must not be empty"() {
+    def "Email topic can't be empty"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
