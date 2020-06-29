@@ -1,5 +1,9 @@
 name: email-api
 
+email:
+  api:
+    time-offset: "+2"
+
 spring:
   data:
     mongodb:
@@ -16,3 +20,9 @@ management:
           - health
           - info
           - metrics
+logging:
+  level:
+    org.springframework.web.servlet.mvc.support: WARN
+    org.springframework: INFO
+    root: INFO
+

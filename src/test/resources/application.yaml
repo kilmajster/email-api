@@ -1,3 +1,9 @@
+name: email-api
+
+email:
+  api:
+    time-offset: "+2"
+
 # testcontainers stuff
 embedded:
   mongodb:
@@ -11,3 +17,11 @@ spring:
       # testcontainers again
       uri: mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
       auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.web.servlet.mvc.support: ERROR
+    root: INFO
