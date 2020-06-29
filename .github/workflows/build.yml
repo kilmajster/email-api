@@ -20,7 +20,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: app
-        path: build/app/email-api.jar
+        path: build/app/email-api-1.0.0-SNAPSHOT.jar
   build-docker:
     runs-on: ubuntu-latest
     needs: build-gradle
@@ -37,7 +37,7 @@ jobs:
     - name: Setup git latest tag for image publishing purposes
       run: git switch -c ${GITHUB_REF##*/}
         && echo $(ls -la ./)
-        && origin_url="git@github.com:jvmops/gumtree-scraper.git"
+        && origin_url="git@github.com:jvmops/email-api.git"
         && git remote set-url origin "$origin_url"
         && echo "git-bot > origin_url set to $origin_url"
         && git tag -d latest || true

@@ -88,6 +88,11 @@ jacocoTestCoverageVerification {
 check.dependsOn jacocoTestReport
 check.dependsOn jacocoTestCoverageVerification
 
+tasks.withType(Test) {
+    jvmArgs += "-Djdk.module.illegalAccess=deny"
+}
+
+
 test {
     useJUnitPlatform()
 
@@ -109,5 +114,5 @@ test {
     }
 }
 
-// might be important during CI
-// libsDirName = 'app'
+// this has to be here till the maven artifactory will be added
+libsDirName = 'app'
