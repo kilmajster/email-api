@@ -12,6 +12,7 @@ import java.util.Set;
 @Value
 @Builder
 public class EmailMessageDto {
+
     ObjectId id;
 
     @Email(message = "Sender is not a valid email address")
@@ -25,6 +26,8 @@ public class EmailMessageDto {
     String topic;
 
     @NotEmpty(message = "Email body must be provided")
-    @Size(max = 255, message = "Email body length exceed 102000")
+    @Size(max = 102000, message = "Email body length exceed 102000")
     String body;
+
+    Long version;
 }

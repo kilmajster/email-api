@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -26,14 +27,23 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         String message = ex.getBindingResult().getAllErrors().stream()
                 .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.joining("; "));
-        ErrorMessage errorMessage = ErrorMessage.builder()
-                .timestamp(OffsetDateTime.now(clock))
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .message(message)
-                .path(((ServletWebRequest) request).getRequest().getServletPath())
-                .build();
-
+        ErrorMessage errorMessage = getErrorMessage(message, status, (ServletWebRequest) request);
         return handleExceptionInternal(ex, errorMessage, headers, status, request);
+    }
+
+    @ExceptionHandler(EmailMessageNotFound.class)
+    protected ResponseEntity<Object> handleEmailMessageNotFound(EmailMessageNotFound ex, WebRequest request) {
+        ErrorMessage errorMessage = getErrorMessage(ex.getMessage(), HttpStatus.NOT_FOUND, (ServletWebRequest) request);
+        return handleExceptionInternal(ex, errorMessage, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    private ErrorMessage getErrorMessage(String message, HttpStatus status, ServletWebRequest request) {
+        return ErrorMessage.builder()
+                .message(message)
+                .statusCode(status.value())
+                .error(status.getReasonPhrase())
+                .path(request.getRequest().getServletPath())
+                .timestamp(OffsetDateTime.now(clock))
+                .build();
     }
 }

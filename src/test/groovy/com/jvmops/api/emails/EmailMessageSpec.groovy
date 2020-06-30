@@ -1,5 +1,6 @@
 package com.jvmops.api.emails
 
+import com.jvmops.api.Main
 import com.jvmops.api.emails.model.EmailMessageDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,7 +10,7 @@ import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes= Main, webEnvironment = RANDOM_PORT)
 class EmailMessageSpec extends Specification {
     @LocalServerPort
     private int port
@@ -23,7 +24,15 @@ class EmailMessageSpec extends Specification {
         emailsEndpoint = URI.create("http://localhost:$port/emails")
     }
 
-    def "Email sender can't be null"() {
+    def "POST /emails - Validation - payload needs to be provided"() {
+        given:
+        def response = restTemplate.postForEntity(emailsEndpoint, null, EmailMessageDto)
+
+        expect:
+        response.statusCode.is4xxClientError()
+    }
+
+    def "POST /emails - Validation - email sender can't be null"() {
         given:
         def email = EmailMessageDto.builder()
                 .recipients(Set.of("jvmops@gmail.com"))
@@ -38,7 +47,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email sender can't be an empty string"() {
+    def "POST /emails - Validation - email sender can't be an empty string"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("")
@@ -54,7 +63,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email sender needs to be a valid email address"() {
+    def "POST /emails - Validation - email sender needs to be a valid email address"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail..com")
@@ -70,7 +79,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email recipients might be null"() {
+    def "POST /emails - Validation - email recipients might be null"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -85,7 +94,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is2xxSuccessful()
     }
 
-    def "Email recipients may be an empty set"() {
+    def "POST /emails - Validation - email recipients may be an empty set"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -101,7 +110,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is2xxSuccessful()
     }
 
-    def "Email recipients must contain valid email addresses"() {
+    def "POST /emails - Validation - email recipients must contain valid email addresses"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -117,7 +126,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email topic can't be empty"() {
+    def "POST /emails - Validation - email topic can't be empty"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
@@ -133,7 +142,7 @@ class EmailMessageSpec extends Specification {
         response.statusCode.is4xxClientError()
     }
 
-    def "Email body can't be empty "() {
+    def "POST /emails - Validation - mail body can't be empty"() {
         given:
         def email = EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
