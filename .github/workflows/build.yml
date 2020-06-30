@@ -1,3 +1,4 @@
+# variables here are comming from github-secrets
 name: master
 
 on:

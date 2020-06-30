@@ -4,17 +4,17 @@ email:
   api:
     time-offset: "+2"
 
-# testcontainers stuff
+# testcontainers stuff (object API over docker for test Integration tests purposes)
 embedded:
   mongodb:
     enabled: true
     dockerImage: mongo:4
-    database: test-gumtree
+    database: email-api
 
 spring:
   data:
     mongodb:
-      # testcontainers again
+      # this is for Spring to know what port Mongo started on (it's random)
       uri: mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
       auto-index-creation: true
   jackson:
