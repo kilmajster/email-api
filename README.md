@@ -1,10 +1,13 @@
 <h1 align="center">
-  gumtree-scraper<br>
+  email-api<br>
   <a href="https://github.com/jvmops/email-api/actions"><img align="center" src="https://github.com/jvmops/email-api/workflows/master/badge.svg"></a>
   <a href="https://codecov.io/gh/jvmops/email-api"><img align="center" src="https://codecov.io/gh/jvmops/email-api/branch/master/graph/badge.svg"></a>
-  <a href="https://github.com/jvmops/email-api/blob/master/LICENSE"><img align="center" src="https://img.shields.io/github/license/jvmops/email-api.svg"></a>
+  <a href="https://github.com/jvmops/email-api/blob/master/LICENSE"><img align="center" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
   <br><br>
 </h1>
+
+## Description
+This is a basic email API that allows to create email messages before they will be send.
 
 ## Building from sources:
 Requirements:
@@ -28,4 +31,4 @@ git clone https://github.com/jvmops/email-api.git
 cd gumtree-scraper
 docker-compose up -d
 ```
-Now go to: http://localhost:8080 for a Swagger page
+Swagger API documentation: http://localhost:8080

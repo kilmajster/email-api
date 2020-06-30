@@ -32,21 +32,14 @@ jobs:
         name: app
         path: build/app/
     - name: Setup git ssh access for tag management
-      uses: webfactory/ssh-agent@v0.1.1
+      uses: webfactory/ssh-agent@v0.4.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup git latest tag for image publishing purposes
       run: git switch -c ${GITHUB_REF##*/}
-        && echo $(ls -la ./)
-        && origin_url="git@github.com:jvmops/email-api.git"
-        && git remote set-url origin "$origin_url"
-        && echo "git-bot > origin_url set to $origin_url"
-        && git tag -d latest || true
-        && git push --delete origin latest || true
-        && git tag latest
-        && echo "git-bot > branch re-tagged"
-        && git push origin latest
-        && echo "git-bot > latest tag pushed to origin"
+        && echo $(pwd)
+        && ./scripts/git_set_upstream.bash
+        && ./scripts/push_latest_tag.bash
     - name: Publish docker image
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
@@ -54,4 +47,3 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tag_names: true
-

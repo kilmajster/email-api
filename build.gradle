@@ -135,4 +135,5 @@ test {
 }
 
 // this has to be here till the maven artifactory will be added
+// it enables actions/upload-artifact@v1 actions/download-artifact@v1 to work
 libsDirName = 'app'
