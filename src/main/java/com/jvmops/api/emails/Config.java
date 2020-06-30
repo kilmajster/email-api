@@ -10,15 +10,15 @@ import java.time.Clock;
 import java.time.ZoneId;
 
 @Configuration
-@EnableConfigurationProperties({EmailApiProperties.class})
+@EnableConfigurationProperties({Properties.class})
 @Slf4j
-public class EmailApiConfig {
+public class Config {
 
     @Autowired
-    private EmailApiProperties emailApiProperties;
+    private Properties properties;
 
     @Bean
     public Clock clock() {
-        return Clock.system(ZoneId.of(emailApiProperties.getTimeOffset()));
+        return Clock.system(ZoneId.of(properties.getTimeOffset()));
     }
 }

@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 @Setter
 @Getter
 @Slf4j
-public class EmailApiProperties {
+public class Properties {
     private String timeOffset = "+5";
 
     @PostConstruct

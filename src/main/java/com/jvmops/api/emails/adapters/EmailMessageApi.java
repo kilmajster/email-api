@@ -2,9 +2,7 @@ package com.jvmops.api.emails.adapters;
 
 import com.jvmops.api.emails.model.EmailMessage;
 import com.jvmops.api.emails.model.EmailMessageDto;
-import com.jvmops.api.emails.ports.EmailMessageRepository;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,15 +15,15 @@ import java.util.function.Function;
 @RequestMapping("/emails")
 public class EmailMessageApi {
 
-    @Autowired
-    private EmailMessageRepository emailMessageRepository;
+//    @Autowired
+//    private EmailMessageRepository emailMessageRepository;
 
     @PostMapping
-    public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newMessage) {
+    public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newEmailMessage) {
         return mapToDomainObject()
 //                .andThen(saveToDabase())
                 .andThen(returnId())
-                .apply(newMessage);
+                .apply(newEmailMessage);
     }
 
     private Function<EmailMessageDto, EmailMessage> mapToDomainObject() {
@@ -38,9 +36,9 @@ public class EmailMessageApi {
                 .build();
     }
 
-    private Function<EmailMessage, EmailMessage> saveToDabase() {
-        return emailMessage -> emailMessageRepository.save(emailMessage);
-    }
+//    private Function<EmailMessage, EmailMessage> saveToDabase() {
+//        return emailMessage -> emailMessageRepository.save(emailMessage);
+//    }
 
     private Function<EmailMessage, EmailMessageDto> returnId() {
         return emailMessage -> EmailMessageDto.builder()

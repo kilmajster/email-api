@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.1.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
+    id 'pmd'
     // tests
     id 'groovy'
     id 'jacoco'
@@ -28,6 +29,16 @@ configurations {
 repositories {
     mavenCentral()
 }
+
+// TODO: use this snippet to upload artifacts to public cloud
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            file(System.getenv('HOME')+'/.m2/repository').mkdirs()
+//            repository(url: 'file:'+System.getenv('HOME')+'/.m2/repository')
+//        }
+//    }
+//}
 
 ext {
     spockVersion = '1.3-groovy-2.5'
@@ -64,6 +75,15 @@ dependencyManagement {
     }
 }
 
+pmd {
+    consoleOutput = true
+    toolVersion = "6.25.0"
+    rulePriority = 5
+
+    // https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/category/java
+    ruleSets = ["category/java/bestpractices.xml"]
+}
+
 /**
  * Test configuration
  */
@@ -85,8 +105,8 @@ jacocoTestCoverageVerification {
     }
 }
 
-check.dependsOn jacocoTestReport
 check.dependsOn jacocoTestCoverageVerification
+check.dependsOn jacocoTestReport
 
 tasks.withType(Test) {
     jvmArgs += "-Djdk.module.illegalAccess=deny"
