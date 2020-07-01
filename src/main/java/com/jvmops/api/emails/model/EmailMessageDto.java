@@ -31,11 +31,11 @@ public class EmailMessageDto {
     @Size(max = 102000, message = "Email body length exceed 102000")
     String body;
 
-    Long version;
-
     Priority priority;
 
     Status status;
+
+    Long version;
 
     @Transient
     public Optional<Priority> optionalPrioryty() {

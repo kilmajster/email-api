@@ -8,8 +8,8 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      database: email-api
-      authentication-database: email-api
+      database: emails
+      authentication-database: emails
   jackson:
     default-property-inclusion: non_null
 management:

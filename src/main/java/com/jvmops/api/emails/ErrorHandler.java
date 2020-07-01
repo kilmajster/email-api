@@ -63,7 +63,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 
     @Value
     @Builder
-    private static class ErrorMessage {
+    static class ErrorMessage {
         String message;
         int statusCode;
         String error;

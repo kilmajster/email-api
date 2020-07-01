@@ -54,7 +54,7 @@ class EmailFetchingSpec extends Specification {
         def randomObjectId = ObjectId.get()
 
         when:
-        def response = restTemplate.getForEntity("$emailsEndpoint/$randomObjectId", ErrorMessage)
+        def response = restTemplate.getForEntity("$emailsEndpoint/$randomObjectId", ErrorHandler.ErrorMessage)
 
         then:
         404 == response.body.statusCode

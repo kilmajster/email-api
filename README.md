@@ -31,4 +31,17 @@ git clone https://github.com/jvmops/email-api.git
 cd gumtree-scraper
 docker-compose up -d
 ```
-Swagger API documentation: http://localhost:8080
+
+## Stats
+This API runtime after initial warmup takes only 110mb RAM
+
+```
+$ docker stats
+CONTAINER NAME          MEM USAGE
+email-api               109.5MiB
+mongo                   77.36MiB
+
+$ docker images
+REPOSITORY              SIZE
+jvmops/email-api        261MB
+```

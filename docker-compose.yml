@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:4
+    restart: "no"
+    ports:
+      - 27017:27017
+    environment:
+      EMAILS_DB_PASSWORD: "${ADMIN_PASSWORD}"
+      TZ: "Europe/Warsaw"
+    volumes:
+      - ./scripts/init_mongo.sh:/docker-entrypoint-initdb.d/init_mongo.sh:ro
+#      - /var/local/mongo:/data/db
+
+  email-api:
+    container_name: email-api
+    build:
+      context: .
+      args:
+        - buildno
+        - gitcommithash
+    image: jvmops/email-api
+    restart: "no"
+    depends_on:
+      - mongo
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongo
+      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: emails
+      SPRING_DATA_MONGODB_USERNAME: api
+      SPRING_DATA_MONGODB_PASSWORD: "${ADMIN_PASSWORD}"
+      # TODO: https://min.io for storing attachments
+
+#  email-sender:
+#    container_name: email-sender
+#    image: jvmops/email-sender
+#    restart: "no"
+#    environment:
+#      SPRING_MAIN_WEB-APPLICATION-TYPE: NONE
+#      SPRING_DATA_MONGODB_HOST: mongo
+#      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: emails
+#      SPRING_DATA_MONGODB_USERNAME: email_api
+#      SPRING_DATA_MONGODB_PASSWORD: "${ADMIN_PASSWORD}"
+#      SPRING_MAIL_USERNAME: "${GMAIL_USERNAME}"
+#      SPRING_MAIL_PASSWORD: "${GMAIL_TOKEN}"
+#      # TODO: distributed queue

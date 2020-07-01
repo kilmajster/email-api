@@ -1,4 +1,4 @@
-name: email-api
+name: email-api-tests
 
 email:
   api:
@@ -9,7 +9,7 @@ embedded:
   mongodb:
     enabled: true
     dockerImage: mongo:4
-    database: email-api
+    database: emails
 
 spring:
   data:
