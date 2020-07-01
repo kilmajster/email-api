@@ -1,4 +1,4 @@
-package com.jvmops.api.emails.ports;
+package com.jvmops.api.emails;
 
 import com.jvmops.api.emails.model.EmailMessage;
 import org.bson.types.ObjectId;

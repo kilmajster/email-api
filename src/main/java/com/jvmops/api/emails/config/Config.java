@@ -1,4 +1,4 @@
-package com.jvmops.api.emails;
+package com.jvmops.api.emails.config;
 
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.extern.slf4j.Slf4j;

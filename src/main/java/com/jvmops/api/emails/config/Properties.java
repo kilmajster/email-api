@@ -1,4 +1,4 @@
-package com.jvmops.api.emails;
+package com.jvmops.api.emails.config;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,9 @@
-package com.jvmops.api.emails.adapters;
+package com.jvmops.api.emails;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Value;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,5 +49,25 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 .path(request.getRequest().getServletPath())
                 .timestamp(OffsetDateTime.now(clock))
                 .build();
+    }
+
+    @Getter
+    static class EmailMessageNotFound extends RuntimeException {
+        private final ObjectId id;
+
+        public EmailMessageNotFound(ObjectId id) {
+            super(String.format("Email message not found. Unknown id: %s", id));
+            this.id = id;
+        }
+    }
+
+    @Value
+    @Builder
+    private static class ErrorMessage {
+        String message;
+        int statusCode;
+        String error;
+        String path;
+        OffsetDateTime timestamp;
     }
 }
