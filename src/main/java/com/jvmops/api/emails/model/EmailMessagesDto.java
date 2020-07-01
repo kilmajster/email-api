@@ -8,6 +8,7 @@ import java.util.List;
 @Value
 @Builder
 public class EmailMessagesDto {
+    // TODO: Swagger, pageNumber starts with 0
     Integer pageNumber;
     Integer size;
     Integer maxPages;

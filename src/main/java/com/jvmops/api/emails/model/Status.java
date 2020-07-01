@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum Status {
-    PENDING(0), SENT(5);
+    ABORT(-1), PENDING(0), SENT(10);
 
     final int value;
 }

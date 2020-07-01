@@ -4,6 +4,7 @@ import com.jvmops.api.emails.ErrorHandler.EmailMessageNotFound;
 import com.jvmops.api.emails.model.EmailMessage;
 import com.jvmops.api.emails.model.EmailMessageDto;
 import com.jvmops.api.emails.model.EmailMessagesDto;
+import com.jvmops.api.emails.model.Priority;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,17 +25,6 @@ public class EmailMessageApi {
     private EmailMessageRepository emailMessageRepository;
 
     @GetMapping
-    public EmailMessagesDto emailMessages() {
-        return fetchPage()
-            .andThen(Converters.mapPageToDto())
-            .apply(Pageable.unpaged());
-    }
-
-    private Function<Pageable, Page<EmailMessage>> fetchPage() {
-        return pageable -> emailMessageRepository.findAll(pageable);
-    }
-
-    @GetMapping
     @RequestMapping("/{emailMessageId}")
     public EmailMessageDto emailMessage(@PathVariable ObjectId emailMessageId) {
         return fetchById()
@@ -45,6 +35,20 @@ public class EmailMessageApi {
     private Function<ObjectId, EmailMessage> fetchById() {
         return id -> emailMessageRepository.findById(id)
                 .orElseThrow(() -> new EmailMessageNotFound(id));
+    }
+
+    /**
+     * TODO: Implement pagination
+     */
+    @GetMapping
+    public EmailMessagesDto emailMessages() {
+        return fetchPage()
+                .andThen(Converters.mapPageToDto())
+                .apply(Pageable.unpaged());
+    }
+
+    private Function<Pageable, Page<EmailMessage>> fetchPage() {
+        return pageable -> emailMessageRepository.findAll(pageable);
     }
 
     @PostMapping
@@ -114,8 +118,13 @@ public class EmailMessageApi {
                     .topic(dto.getTopic())
                     .body(dto.getBody())
                     .status(PENDING)
-                    .priority(dto.optionalPrioryty().orElse(LOW))
+                    .priority(lowPriorityIfNull(dto))
                     .build();
+        }
+
+        private static Priority lowPriorityIfNull(EmailMessageDto dto) {
+            return dto.optionalPrioryty()
+                    .orElse(LOW);
         }
     }
 }

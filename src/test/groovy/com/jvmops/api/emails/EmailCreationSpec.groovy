@@ -4,7 +4,6 @@ import com.jvmops.api.Main
 import com.jvmops.api.emails.model.EmailMessageDto
 import com.jvmops.api.emails.model.Priority
 import com.jvmops.api.emails.model.Status
-import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -15,7 +14,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(classes= Main, webEnvironment = RANDOM_PORT)
 class EmailCreationSpec extends Specification {
-    private static final ObjectId OLD_EMAIL_ID = new ObjectId("5efbc4bb6677c23cec2a1c26")
 
     @Autowired
     private EmailMessageRepository emailMessages

@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ErrorHandler extends ResponseEntityExceptionHandler {
+class ErrorHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
     private Clock clock;

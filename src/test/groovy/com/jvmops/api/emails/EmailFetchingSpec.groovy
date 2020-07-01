@@ -17,19 +17,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.util.CollectionUtils.isEmpty
 
 @SpringBootTest(classes= Main, webEnvironment = RANDOM_PORT)
-class EmailFetchingSpec extends Specification {
+class EmailFetchingSpec extends EmailsEndpointSpecification {
     private static final ObjectId OLD_EMAIL_ID = new ObjectId("5efbc4bb6677c23cec2a1c26")
 
-    @Autowired
-    private EmailMessageRepository emailMessages
 
-    @LocalServerPort
-    private int port
-
-    @Autowired
-    private TestRestTemplate restTemplate
-
-    private URI emailsEndpoint
 
     def setup() {
         emailsEndpoint = URI.create("http://localhost:$port/emails")

@@ -31,6 +31,7 @@ public class EmailMessageDto {
     @Size(max = 102000, message = "Email body length exceed 102000")
     String body;
 
+    // you should use optionalPrioryty() to access that
     Priority priority;
 
     Status status;
