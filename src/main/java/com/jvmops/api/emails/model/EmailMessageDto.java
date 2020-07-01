@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.beans.Transient;
+import java.util.Optional;
 import java.util.Set;
 
 @Value
@@ -30,4 +32,13 @@ public class EmailMessageDto {
     String body;
 
     Long version;
+
+    Priority priority;
+
+    Status status;
+
+    @Transient
+    public Optional<Priority> optionalPrioryty() {
+        return Optional.ofNullable(priority);
+    }
 }

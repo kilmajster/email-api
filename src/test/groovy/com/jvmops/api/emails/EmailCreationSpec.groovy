@@ -1,10 +1,9 @@
 package com.jvmops.api.emails
 
 import com.jvmops.api.Main
-import com.jvmops.api.emails.adapters.ErrorMessage
-import com.jvmops.api.emails.model.EmailMessage
 import com.jvmops.api.emails.model.EmailMessageDto
-import com.jvmops.api.emails.model.EmailMessagesDto
+import com.jvmops.api.emails.model.Priority
+import com.jvmops.api.emails.model.Status
 import com.jvmops.api.emails.ports.EmailMessageRepository
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,13 +13,10 @@ import org.springframework.boot.web.server.LocalServerPort
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import static org.springframework.util.CollectionUtils.isEmpty
 
 @SpringBootTest(classes= Main, webEnvironment = RANDOM_PORT)
 class EmailCreationSpec extends Specification {
-    private static final EmailMessage OLD_EMAIL = oldMessage()
     private static final ObjectId OLD_EMAIL_ID = new ObjectId("5efbc4bb6677c23cec2a1c26")
-    private static final EmailMessageDto NEW_VALID_EMAIL = validEmailMessageDto()
 
     @Autowired
     private EmailMessageRepository emailMessages
@@ -36,67 +32,19 @@ class EmailCreationSpec extends Specification {
     def setup() {
         emailsEndpoint = URI.create("http://localhost:$port/emails")
         emailMessages.deleteAll()
-        emailMessages.save(OLD_EMAIL)
     }
 
-    def "GET /emails/{id} - you can retrieve existing email by its id"() {
+    def "POST /emails - if email was created expect its id to be returned"() {
         when:
-        def existingEmails = restTemplate.getForEntity("$emailsEndpoint/$OLD_EMAIL_ID", EmailMessagesDto)
-                .getBody()
-                .collect()
-
-        then:
-        !isEmpty(existingEmails)
-    }
-
-    def "GET /emails/{id} - retrieving email by an unknown ID result in 404"() {
-        given:
-        def randomObjectId = ObjectId.get()
-
-        when:
-        def response = restTemplate.getForEntity("$emailsEndpoint/$randomObjectId", ErrorMessage)
-
-        then:
-        404 == response.body.statusCode
-        and: "With a worthy message"
-        response.body.message.contains(randomObjectId.toString())
-    }
-
-    def "GET /emails - is paginated and defaults to first page"() {
-        when: "no pagination info"
-        def emailMessagesDto = restTemplate.getForEntity(emailsEndpoint, EmailMessagesDto)
-                .getBody()
-
-        then: "expect first page"
-        0 == emailMessagesDto.pageNumber
-        and:
-        null != emailMessagesDto.maxPages
-        null != emailMessagesDto.size
-    }
-
-    def "POST /emails - if email was created expect its id and version returned"() {
-        when:
-        def response = restTemplate.postForEntity(emailsEndpoint, NEW_VALID_EMAIL, EmailMessageDto)
+        def response = restTemplate.postForEntity(emailsEndpoint, validEmailMessageDto(), EmailMessageDto)
 
         then:
         null != response.getBody().id
-        null != response.getBody().version
-    }
-
-    def "POST /emails - created email can be retrieved from db by its id"() {
-        when:
-        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, NEW_VALID_EMAIL, EmailMessageDto)
-            .getBody()
-            .getId()
-        emailMessages.findById(savedEmailId)
-
-        then:
-            noExceptionThrown()
     }
 
     def "POST /emails - created email can be retrieved through API by its id"() {
         when:
-        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, NEW_VALID_EMAIL, EmailMessageDto)
+        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, validEmailMessageDto(), EmailMessageDto)
                 .getBody()
                 .getId()
         def emailDto = restTemplate.getForEntity("$emailsEndpoint/$savedEmailId", EmailMessageDto)
@@ -106,22 +54,57 @@ class EmailCreationSpec extends Specification {
         savedEmailId == emailDto.id
     }
 
+    def "POST /emails - created email will have the lowest priority by default"() {
+        when:
+        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, validEmailMessageDto(), EmailMessageDto)
+                .getBody()
+                .getId()
+        def emailDto = restTemplate.getForEntity("$emailsEndpoint/$savedEmailId", EmailMessageDto)
+                .getBody();
+
+        then:
+        Priority.LOW == emailDto.priority
+    }
+
+    def "POST /emails - you can pass custom priority while creating email"() {
+        when:
+        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, validEmailMessageDto(Priority.HIGH), EmailMessageDto)
+                .getBody()
+                .getId()
+        def emailDto = restTemplate.getForEntity("$emailsEndpoint/$savedEmailId", EmailMessageDto)
+                .getBody();
+
+        then:
+        Priority.HIGH == emailDto.priority
+    }
+
+    def "POST /emails - created email will get PENDING status"() {
+        when:
+        def savedEmailId = restTemplate.postForEntity(emailsEndpoint, validEmailMessageDto(), EmailMessageDto)
+                .getBody()
+                .getId()
+        def emailDto = restTemplate.getForEntity("$emailsEndpoint/$savedEmailId", EmailMessageDto)
+                .getBody();
+
+        then:
+        Status.PENDING == emailDto.status
+    }
+
     private static EmailMessageDto validEmailMessageDto() {
+        return builder().build()
+    }
+
+    private static EmailMessageDto validEmailMessageDto(Priority priority) {
+        return builder()
+                .priority(priority)
+                .build();
+    }
+
+    private static EmailMessageDto.EmailMessageDtoBuilder builder() {
         EmailMessageDto.builder()
                 .sender("jvmops@gmail.com")
                 .recipients(Set.of("jvmops@gmail.com"))
                 .topic("Important email")
                 .body("The message")
-                .build()
-    }
-
-    private static EmailMessage oldMessage() {
-        EmailMessage.builder()
-                .id(OLD_EMAIL_ID)
-                .sender("jvmops+test@gmail.com")
-                .recipients(Set.of("jvmops+test@gmail.com"))
-                .topic("Some old email that was created during manual tests")
-                .body("Worthless")
-                .build()
     }
 }

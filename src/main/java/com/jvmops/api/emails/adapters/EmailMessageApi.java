@@ -14,6 +14,9 @@ import javax.validation.Valid;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.jvmops.api.emails.model.Status.PENDING;
+import static com.jvmops.api.emails.model.Priority.LOW;
+
 @RestController
 @RequestMapping("/emails")
 public class EmailMessageApi {
@@ -81,7 +84,6 @@ public class EmailMessageApi {
                     switch (convertingStrategy) {
                         case ID -> EmailMessageDto.builder()
                                 .id(emailMessage.getId())
-                                .version(emailMessage.getVersion())
                                 .build();
                         case SINGLE_EMAIL -> EmailMessageDto.builder()
                                 .id(emailMessage.getId())
@@ -90,12 +92,16 @@ public class EmailMessageApi {
                                 .body(emailMessage.getBody())
                                 .sender(emailMessage.getSender())
                                 .recipients(emailMessage.getRecipients())
+                                .priority(emailMessage.getPriority())
+                                .status(emailMessage.getStatus())
                                 .build();
                         case PAGE -> EmailMessageDto.builder()
                                 .id(emailMessage.getId())
                                 .topic(emailMessage.getTopic())
                                 .sender(emailMessage.getSender())
                                 .recipients(emailMessage.getRecipients())
+                                .priority(emailMessage.getPriority())
+                                .status(emailMessage.getStatus())
                                 .build();
                     };
         }
@@ -107,6 +113,8 @@ public class EmailMessageApi {
                     .recipients(dto.getRecipients())
                     .topic(dto.getTopic())
                     .body(dto.getBody())
+                    .status(PENDING)
+                    .priority(dto.optionalPrioryty().orElse(LOW))
                     .build();
         }
     }

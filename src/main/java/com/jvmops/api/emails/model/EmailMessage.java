@@ -1,8 +1,6 @@
 package com.jvmops.api.emails.model;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -21,11 +19,8 @@ public class EmailMessage {
     Set<String> recipients;
     String topic;
     String body;
-    EmailMessageStatus status;
+    Status status;
+    Priority priority;
     @Version
     Long version;
-
-    public enum EmailMessageStatus {
-        PENDING, SENT
-    }
 }
