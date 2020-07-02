@@ -18,6 +18,15 @@ bootJar {
     mainClassName = 'com.jvmops.api.Main'
 }
 
+pmd {
+    consoleOutput = true
+    toolVersion = "6.25.0"
+    rulePriority = 5
+
+    // https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/category/java
+    ruleSets = ["category/java/bestpractices.xml"]
+}
+
 import com.bmuschko.gradle.docker.tasks.image.*
 
 task dockerBuildImageApi(type: DockerBuildImage) {
@@ -28,6 +37,10 @@ task dockerBuildImageApi(type: DockerBuildImage) {
 
 // TODO: it wants to build too early this way
 //check.dependsOn(dockerBuildImageApi)
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
 
 // for github actions and seamless dockerhub integration
 libsDirName = 'app'

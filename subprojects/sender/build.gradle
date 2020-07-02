@@ -14,8 +14,22 @@ configurations {
     }
 }
 
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+}
+
 bootJar {
     mainClassName = 'com.jvmops.workers.sender.Main'
+}
+
+pmd {
+    consoleOutput = true
+    toolVersion = "6.25.0"
+    rulePriority = 5
+
+    // https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/category/java
+    ruleSets = ["category/java/bestpractices.xml"]
 }
 
 import com.bmuschko.gradle.docker.tasks.image.*
@@ -24,6 +38,20 @@ task dockerBuildImageSender(type: DockerBuildImage) {
     inputDir = file("$project.rootDir/subprojects/sender")
     images.add('jvmops/email-sender:latest')
     dependsOn(bootJar)
+}
+
+// Java 14
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "--enable-preview"
+}
+
+tasks.withType(Test) {
+    jvmArgs += "--enable-preview"
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs += '--enable-preview'
 }
 
 // for github actions and seamless dockerhub integration

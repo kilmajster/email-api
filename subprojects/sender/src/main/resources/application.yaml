@@ -5,11 +5,24 @@ email:
     time-offset: "+2"
 
 spring:
+  rabbitmq:
+    host: 127.0.0.1
+    podr: 5672
+    username: guest
+    password: guest
   data:
     mongodb:
       auto-index-creation: true
       database: emails
       authentication-database: emails
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your_email@gmail.com
+    password: your_password
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
   jackson:
     default-property-inclusion: non_null
 management:

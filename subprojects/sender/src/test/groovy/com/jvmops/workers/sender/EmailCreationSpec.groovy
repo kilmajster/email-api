@@ -1,6 +1,5 @@
-package com.jvmops.api.emails
+package com.jvmops.workers.sender
 
-import com.jvmops.workers.Main
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Ignore
 import spock.lang.Specification
