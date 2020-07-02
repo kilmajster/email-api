@@ -9,26 +9,19 @@
 ## Description
 This is a basic email API that allows to create email messages before they will be send.
 
-## Building from sources:
+## Building & Running:
 Requirements:
 - JDK 14
 - docker
-
+- docker-compose
 ```
 git clone https://github.com/jvmops/email-api.git
+
 cd email-api
 ./gradlew build
-docker build -t jvmops/email-api .
-```
+./gradlew dockerBuildImageApi
+./gradlew dockerBuildImageSender
 
-## Running
-Requirements:
-- docker-compose
-
-Docker image is available at [docker hub](https://hub.docker.com/r/jvmops/email-api). Building from sources is not required to run this app.
-```
-git clone https://github.com/jvmops/email-api.git
-cd gumtree-scraper
 docker-compose up -d
 ```
 

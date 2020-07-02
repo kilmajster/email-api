@@ -1,4 +1,6 @@
 rootProject.name = 'email-api'
 
 include 'api'
+include 'sender'
 project(':api').projectDir = new File(settingsDir, 'subprojects/api')
+project(':sender').projectDir = new File(settingsDir, 'subprojects/sender')

@@ -6,7 +6,7 @@ apply plugin: 'groovy'
 apply plugin: 'jacoco'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
-group = 'com.jvmops.api'
+group = 'com.jvmops.workers'
 
 configurations {
     compileOnly {
@@ -15,19 +15,16 @@ configurations {
 }
 
 bootJar {
-    mainClassName = 'com.jvmops.api.Main'
+    mainClassName = 'com.jvmops.workers.sender.Main'
 }
 
 import com.bmuschko.gradle.docker.tasks.image.*
 
-task dockerBuildImageApi(type: DockerBuildImage) {
-    inputDir = file("$project.rootDir/subprojects/api")
-    images.add('jvmops/email-api:latest')
+task dockerBuildImageSender(type: DockerBuildImage) {
+    inputDir = file("$project.rootDir/subprojects/sender")
+    images.add('jvmops/email-sender:latest')
     dependsOn(bootJar)
 }
-
-// TODO: it wants to build too early this way
-//check.dependsOn(dockerBuildImageApi)
 
 // for github actions and seamless dockerhub integration
 libsDirName = 'app'

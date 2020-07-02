@@ -1,0 +1,27 @@
+name: email-sender-test
+
+email:
+  api:
+    time-offset: "+2"
+
+# testcontainers stuff (object API over docker for test Integration tests purposes)
+embedded:
+  mongodb:
+    enabled: true
+    dockerImage: mongo:4
+    database: emails
+
+spring:
+  data:
+    mongodb:
+      # this is for Spring to know what port Mongo started on (it's random)
+      uri: mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
+      auto-index-creation: true
+  jackson:
+    default-property-inclusion: non_null
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.web.servlet.mvc.support: ERROR
+    root: INFO

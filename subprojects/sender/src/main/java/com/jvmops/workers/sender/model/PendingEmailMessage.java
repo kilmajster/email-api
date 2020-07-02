@@ -1,7 +1,5 @@
-package com.jvmops.services.emails.model;
+package com.jvmops.workers.sender.model;
 
-import com.jvmops.api.emails.model.Priority;
-import com.jvmops.api.emails.model.Status;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.bson.types.ObjectId;
