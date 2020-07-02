@@ -1,0 +1,32 @@
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java'
+apply plugin: 'pmd'
+apply plugin: 'groovy'
+apply plugin: 'jacoco'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+group = 'com.jvmops.api'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+bootJar {
+    mainClassName = 'com.jvmops.api.Main'
+}
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+task dockerBuildImageApi(type: DockerBuildImage) {
+    inputDir = file("$project.rootDir/subprojects/api")
+    images.add('jvmops/email-api:latest')
+    dependsOn(bootJar)
+}
+
+check.dependsOn(dockerBuildImageApi)
+
+// for github actions and seamless dockerhub integration
+libsDirName = 'app'

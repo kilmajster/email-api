@@ -7,11 +7,7 @@ import com.jvmops.api.emails.model.EmailMessageDto
 import com.jvmops.api.emails.model.EmailMessagesDto
 import com.jvmops.api.emails.model.Priority
 import org.bson.types.ObjectId
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
-import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import static org.springframework.util.CollectionUtils.isEmpty
