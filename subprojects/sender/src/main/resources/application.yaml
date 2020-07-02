@@ -7,7 +7,7 @@ email:
 spring:
   rabbitmq:
     host: 127.0.0.1
-    podr: 5672
+    port: 5672
     username: guest
     password: guest
   data:

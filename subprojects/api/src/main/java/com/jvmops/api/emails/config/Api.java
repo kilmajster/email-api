@@ -19,16 +19,16 @@ import java.util.List;
 
 @EnableWebMvc
 @Configuration
-@EnableConfigurationProperties({Properties.class})
+@EnableConfigurationProperties({ApiProperties.class})
 @Slf4j
-public class Config implements WebMvcConfigurer {
+public class Api implements WebMvcConfigurer {
 
     @Autowired
-    private Properties properties;
+    private ApiProperties apiProperties;
 
     @Bean
     public Clock clock() {
-        return Clock.system(ZoneId.of(properties.getTimeOffset()));
+        return Clock.system(ZoneId.of(apiProperties.getTimeOffset()));
     }
 
     @Override

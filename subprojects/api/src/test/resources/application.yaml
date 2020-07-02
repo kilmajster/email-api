@@ -12,6 +12,7 @@ embedded:
     database: emails
 
 spring:
+  rabbitmq:
   data:
     mongodb:
       # this is for Spring to know what port Mongo started on (it's random)

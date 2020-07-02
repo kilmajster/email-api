@@ -1,4 +1,4 @@
-rootProject.name = 'email-api'
+rootProject.name = 'emails'
 
 include 'api'
 include 'sender'

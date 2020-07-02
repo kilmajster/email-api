@@ -51,7 +51,10 @@ tasks.withType(Test) {
 }
 
 tasks.withType(JavaExec) {
-    jvmArgs += '--enable-preview'
+    jvmArgs += [
+            '--enable-preview',
+            '-XX:+ShowCodeDetailsInExceptionMessages'
+    ]
 }
 
 // for github actions and seamless dockerhub integration

@@ -1,4 +1,4 @@
-package com.jvmops.workers.sender.model;
+package com.jvmops.workers.sender.emails.model;
 
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;

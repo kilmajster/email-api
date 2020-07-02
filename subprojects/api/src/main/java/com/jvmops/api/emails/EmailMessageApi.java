@@ -5,6 +5,7 @@ import com.jvmops.api.emails.model.EmailMessage;
 import com.jvmops.api.emails.model.EmailMessageDto;
 import com.jvmops.api.emails.model.EmailMessagesDto;
 import com.jvmops.api.emails.model.Priority;
+import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,9 +21,12 @@ import static com.jvmops.api.emails.model.Priority.LOW;
 
 @RestController
 @RequestMapping("/emails")
+@AllArgsConstructor
 public class EmailMessageApi {
     @Autowired
     private EmailMessageRepository emailMessageRepository;
+    @Autowired
+    private PendingEmailsQueue pendingEmails;
 
     @GetMapping
     @RequestMapping("/{emailMessageId}")
@@ -54,6 +58,7 @@ public class EmailMessageApi {
     @PostMapping
     public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newEmailMessage) {
         return saveToDabase()
+                .andThen(putOnPendingEmailsQueue())
                 .andThen(Converters.emailToDto(ConvertingStrategy.ID))
                 .apply(newEmailMessage);
     }
@@ -61,6 +66,13 @@ public class EmailMessageApi {
     private Function<EmailMessageDto, EmailMessage> saveToDabase() {
         return Converters.mapToDomainObject()
                 .andThen(emailMessageRepository::save);
+    }
+
+    private Function<EmailMessage, EmailMessage> putOnPendingEmailsQueue() {
+        return email -> {
+            pendingEmails.offer(email);
+            return email;
+        };
     }
 
     enum ConvertingStrategy {
