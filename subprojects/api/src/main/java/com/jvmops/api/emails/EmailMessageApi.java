@@ -1,10 +1,7 @@
 package com.jvmops.api.emails;
 
 import com.jvmops.api.emails.ErrorHandler.EmailMessageNotFound;
-import com.jvmops.api.emails.model.EmailMessage;
-import com.jvmops.api.emails.model.EmailMessageDto;
-import com.jvmops.api.emails.model.EmailMessagesDto;
-import com.jvmops.api.emails.model.Priority;
+import com.jvmops.api.emails.model.*;
 import com.jvmops.api.emails.ports.EmailMessageRepository;
 import com.jvmops.api.emails.ports.PendingEmailsQueue;
 import lombok.AllArgsConstructor;
@@ -58,14 +55,14 @@ public class EmailMessageApi {
     }
 
     @PostMapping
-    public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newEmailMessage) {
+    public EmailMessageDto createEmailMessage(@RequestBody @Valid NewEmailMessageDto newEmailMessage) {
         return saveToDabase()
                 .andThen(putOnPendingEmailsQueue())
                 .andThen(Converters.mapToDto(ConvertingStrategy.ID))
                 .apply(newEmailMessage);
     }
 
-    private Function<EmailMessageDto, EmailMessage> saveToDabase() {
+    private Function<NewEmailMessageDto, EmailMessage> saveToDabase() {
         return Converters.mapToDomain()
                 .andThen(emailMessageRepository::save);
     }
@@ -124,7 +121,7 @@ public class EmailMessageApi {
                     };
         }
 
-        private static Function<EmailMessageDto, EmailMessage> mapToDomain() {
+        private static Function<NewEmailMessageDto, EmailMessage> mapToDomain() {
             return dto -> EmailMessage.builder()
                     .id(ObjectId.get())
                     .sender(dto.getSender())
@@ -136,7 +133,7 @@ public class EmailMessageApi {
                     .build();
         }
 
-        private static Priority lowPriorityIfNull(EmailMessageDto dto) {
+        private static Priority lowPriorityIfNull(NewEmailMessageDto dto) {
             return dto.optionalPrioryty()
                     .orElse(LOW);
         }
