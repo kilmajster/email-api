@@ -5,6 +5,8 @@ import com.jvmops.api.emails.model.EmailMessage;
 import com.jvmops.api.emails.model.EmailMessageDto;
 import com.jvmops.api.emails.model.EmailMessagesDto;
 import com.jvmops.api.emails.model.Priority;
+import com.jvmops.api.emails.ports.EmailMessageRepository;
+import com.jvmops.api.emails.ports.PendingEmailsQueue;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class EmailMessageApi {
     @RequestMapping("/{emailMessageId}")
     public EmailMessageDto emailMessage(@PathVariable ObjectId emailMessageId) {
         return fetchById()
-                .andThen(Converters.emailToDto(ConvertingStrategy.SINGLE_EMAIL))
+                .andThen(Converters.mapToDto(ConvertingStrategy.SINGLE_EMAIL))
                 .apply(emailMessageId);
     }
 
@@ -59,12 +61,12 @@ public class EmailMessageApi {
     public EmailMessageDto createEmailMessage(@RequestBody @Valid EmailMessageDto newEmailMessage) {
         return saveToDabase()
                 .andThen(putOnPendingEmailsQueue())
-                .andThen(Converters.emailToDto(ConvertingStrategy.ID))
+                .andThen(Converters.mapToDto(ConvertingStrategy.ID))
                 .apply(newEmailMessage);
     }
 
     private Function<EmailMessageDto, EmailMessage> saveToDabase() {
-        return Converters.mapToDomainObject()
+        return Converters.mapToDomain()
                 .andThen(emailMessageRepository::save);
     }
 
@@ -83,7 +85,7 @@ public class EmailMessageApi {
         public static Function<Page<EmailMessage>, EmailMessagesDto> mapPageToDto() {
             return (emailMessagePage) -> {
                 var emailMessagesDto = emailMessagePage.getContent().stream()
-                        .map(emailToDto(ConvertingStrategy.PAGE))
+                        .map(mapToDto(ConvertingStrategy.PAGE))
                         .collect(Collectors.toList());
 
                 return EmailMessagesDto.builder()
@@ -95,7 +97,7 @@ public class EmailMessageApi {
             };
         }
 
-        private static Function<EmailMessage, EmailMessageDto> emailToDto(ConvertingStrategy convertingStrategy) {
+        private static Function<EmailMessage, EmailMessageDto> mapToDto(ConvertingStrategy convertingStrategy) {
             return (emailMessage) ->
                     switch (convertingStrategy) {
                         case ID -> EmailMessageDto.builder()
@@ -122,7 +124,7 @@ public class EmailMessageApi {
                     };
         }
 
-        private static Function<EmailMessageDto, EmailMessage> mapToDomainObject() {
+        private static Function<EmailMessageDto, EmailMessage> mapToDomain() {
             return dto -> EmailMessage.builder()
                     .id(ObjectId.get())
                     .sender(dto.getSender())

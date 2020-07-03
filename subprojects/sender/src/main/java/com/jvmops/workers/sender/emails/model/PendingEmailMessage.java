@@ -10,5 +10,4 @@ import org.bson.types.ObjectId;
 @Builder
 public class PendingEmailMessage {
     ObjectId id;
-    int priority;
 }

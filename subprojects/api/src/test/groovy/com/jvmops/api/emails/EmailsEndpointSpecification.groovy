@@ -1,6 +1,7 @@
 package com.jvmops.api.emails
 
 import com.jvmops.api.Main
+import com.jvmops.api.emails.ports.EmailMessageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration

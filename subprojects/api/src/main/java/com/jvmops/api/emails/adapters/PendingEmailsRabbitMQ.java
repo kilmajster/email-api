@@ -1,6 +1,6 @@
 package com.jvmops.api.emails.adapters;
 
-import com.jvmops.api.emails.PendingEmailsQueue;
+import com.jvmops.api.emails.ports.PendingEmailsQueue;
 import com.jvmops.api.emails.model.EmailMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import static com.jvmops.api.emails.config.RabbitMQConfig.PENDING_EMAIL_QUEUE;
 @Primary
 @Slf4j
 @AllArgsConstructor
-public class PendingEmailsRabbitMQ implements PendingEmailsQueue {
+class PendingEmailsRabbitMQ implements PendingEmailsQueue {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 

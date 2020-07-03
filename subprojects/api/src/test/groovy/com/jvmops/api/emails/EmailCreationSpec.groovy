@@ -4,6 +4,7 @@ import com.jvmops.api.Main
 import com.jvmops.api.emails.model.EmailMessageDto
 import com.jvmops.api.emails.model.Priority
 import com.jvmops.api.emails.model.Status
+import com.jvmops.api.emails.ports.EmailMessageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

@@ -25,6 +25,22 @@ git clone https://github.com/jvmops/email-api.git \
 
 docker-compose up -d
 ```
+`/emails` endpoint is ready at: http://localhost:8080/emails
+
+## Manual tests:
+```
+# create new email:
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{ "sender": "me@jvmops.com", "recipients": [ "you@jvmops.com" ], "topic": "Topic", "body": "Desc" }' \
+  http://localhost:8080/emails
+
+# check api logs:
+docker logs emails-api
+
+# check sender logs:
+docker logs emails-sender
+```
 
 ## Test report
 ```
@@ -46,6 +62,9 @@ POST /emails - created email will have the lowest priority by default PASSED
 POST /emails - you can pass custom priority while creating email PASSED
 POST /emails - created email will get PENDING status PASSED
  GET /emails - pagination - test dataset contains multiple pages of emails PASSED
+
+>> After email is dispatched, the message status will be updated to SENT PASSED
+>> If message can't be sent leave its PENDING status be PASSED
 ```
 
 ## Stats

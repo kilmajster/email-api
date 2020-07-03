@@ -1,4 +1,4 @@
-package com.jvmops.api.emails;
+package com.jvmops.api.emails.ports;
 
 import com.jvmops.api.emails.model.EmailMessage;
 

@@ -21,5 +21,5 @@ public class EmailMessage {
     String body;
     @Indexed
     Status status;
-    int priority;
+    Priority priority;
 }

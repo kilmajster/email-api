@@ -5,6 +5,7 @@ import com.jvmops.workers.sender.emails.adapters.DummyClient
 import com.jvmops.workers.sender.emails.adapters.HighThroughputClient
 import com.jvmops.workers.sender.emails.model.EmailMessage
 import com.jvmops.workers.sender.emails.model.PendingEmailMessage
+import com.jvmops.workers.sender.emails.model.Priority
 import com.jvmops.workers.sender.emails.model.Status
 import com.jvmops.workers.sender.emails.ports.EmailMessageRepository
 import com.jvmops.workers.sender.emails.ports.SmtpClient
@@ -56,7 +57,7 @@ class EmailSendingSpec extends Specification {
 
     }
 
-    def "If message can't be sent leave it PENDING status be"() {
+    def "If message can't be sent leave its PENDING status be"() {
         given:
         sendEmailCommand = new SendEmailCommand(ALWAYS_FAIL, emailMessageRepository)
         def pendingMessage = PendingEmailMessage.builder()
@@ -83,7 +84,7 @@ class EmailSendingSpec extends Specification {
                 .topic("Some irrelevant test email")
                 .body("Even move irrelevant stuff is here do not bother to read it.")
                 .status(Status.PENDING)
-                .priority(0)
+                .priority(Priority.LOW)
                 .build()
     }
 

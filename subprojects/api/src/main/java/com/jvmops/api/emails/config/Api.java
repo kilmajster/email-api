@@ -21,13 +21,13 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties({ApiProperties.class})
 @Slf4j
-public class Api implements WebMvcConfigurer {
+class Api implements WebMvcConfigurer {
 
     @Autowired
     private ApiProperties apiProperties;
 
     @Bean
-    public Clock clock() {
+    Clock clock() {
         return Clock.system(ZoneId.of(apiProperties.getTimeOffset()));
     }
 
