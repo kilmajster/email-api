@@ -1,7 +1,7 @@
 package com.jvmops.workers.sender.emails.adapters;
 
-import com.jvmops.workers.sender.emails.ports.SmtpClient;
 import com.jvmops.workers.sender.emails.model.EmailMessage;
+import com.jvmops.workers.sender.emails.ports.SmtpClient;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Set;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Lazy
 @Component
@@ -29,7 +31,7 @@ public class GmailClient implements SmtpClient {
             MimeMessageWrapper message = prepareMessage(email.getTopic(), email.getBody());
             sendEmailToReceivers(message, email.getRecipients());
         } catch (MessagingException ex) {
-            log.error("Unable to send email: {}", email.getId());
+            throw new GmailClientException(email, ex);
         }
     }
 
@@ -43,6 +45,9 @@ public class GmailClient implements SmtpClient {
     }
 
     private void sendEmailToReceivers(MimeMessageWrapper messageWrapper, Set<String> emails) throws MessagingException {
+        if (isEmpty(emails)) {
+            return;
+        }
         messageWrapper.helper.setTo(emails.toArray(new String[0]));
         emailSender.send(messageWrapper.message);
     }
@@ -52,5 +57,13 @@ public class GmailClient implements SmtpClient {
     private static class MimeMessageWrapper {
         MimeMessage message;
         MimeMessageHelper helper;
+    }
+
+    static class GmailClientException extends RuntimeException {
+        private static final String MSG = "GMail %s account failed in sending email: {}";
+
+        public GmailClientException(EmailMessage emailMessage, Throwable cause) {
+            super(String.format(MSG, emailMessage.getId()), cause);
+        }
     }
 }

@@ -28,7 +28,7 @@ public class EmailMessageUpdateRepository implements EmailMessageRepository {
     }
 
     @Override
-    public void emailSent(EmailMessage emailMessage) {
+    public EmailMessage emailSent(EmailMessage emailMessage) {
         mongoTemplate.updateFirst(
                 new Query(Criteria
                         .where("id").is(emailMessage.getId())),
@@ -36,10 +36,14 @@ public class EmailMessageUpdateRepository implements EmailMessageRepository {
                         .set("status", Status.SENT),
                 EmailMessage.class
         );
+
+        return emailMessage.toBuilder()
+                .status(Status.SENT)
+                .build();
     }
 
     @Override
     public void error(PendingEmailMessage emailMessage, Throwable throwable) {
-        log.warn("Errors are not persisted yet");
+        log.warn("Error events are not persisted yet");
     }
 }

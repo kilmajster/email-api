@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 
+import static com.jvmops.workers.sender.emails.SendEmailCommand.*
 import static com.jvmops.workers.sender.emails.model.Status.ABORT
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
@@ -57,7 +58,7 @@ class EmailSendingSpec extends Specification {
 
     }
 
-    def "If message can't be sent leave its PENDING status be"() {
+    def "If message can't be sent leave its PENDING status be strategy"() {
         given:
         sendEmailCommand = new SendEmailCommand(ALWAYS_FAIL, emailMessageRepository)
         def pendingMessage = PendingEmailMessage.builder()
@@ -68,7 +69,7 @@ class EmailSendingSpec extends Specification {
         sendEmailCommand.send(pendingMessage)
 
         then:
-        thrown(UnsupportedOperationException)
+        thrown UnableToSendEmail
 
         and:
         Status.PENDING == emailMessageRepository.findById(MESSAGE_ID)

@@ -11,7 +11,7 @@ import java.util.Set;
 @Document("emails")
 @EqualsAndHashCode(of = "id")
 @Value
-@Builder
+@Builder(toBuilder=true)
 public class EmailMessage {
     @Id
     ObjectId id;

@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface EmailMessageRepository {
     Optional<EmailMessage> findById(ObjectId id);
-    void emailSent(EmailMessage message);
+    EmailMessage emailSent(EmailMessage message);
     void error(PendingEmailMessage emailMessage, Throwable throwable);
 }
