@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-  mongo:
-    container_name: mongo
+  emails-mongo:
+    container_name: emails-mongo
     image: mongo:4
     restart: "no"
     ports:
@@ -11,38 +11,59 @@ services:
       TZ: "Europe/Warsaw"
     volumes:
       - ./scripts/init_mongo.sh:/docker-entrypoint-initdb.d/init_mongo.sh:ro
-#      - /var/local/mongo:/data/db
 
-  email-api:
-    container_name: email-api
+  emails-rabbitmq:
+    container_name: emails-rabbitmq
+    image: rabbitmq:3-management
+    restart: "no"
+    ports:
+      - 15672:15672
+      - 5671:5671
+
+  emails-api:
+    container_name: emails-api
     build:
       context: .
       args:
         - buildno
         - gitcommithash
-    image: jvmops/email-api
+    image: jvmops/emails-api
     restart: "no"
     depends_on:
-      - mongo
+      - emails-mongo
+      - emails-rabbitmq
     ports:
       - 8080:8080
     environment:
-      SPRING_DATA_MONGODB_HOST: mongo
+      SPRING_DATA_MONGODB_HOST: emails-mongo
       SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: emails
       SPRING_DATA_MONGODB_USERNAME: api
       SPRING_DATA_MONGODB_PASSWORD: "${ADMIN_PASSWORD}"
-      # TODO: https://min.io for storing attachments
+      SPRING_RABBITMQ_HOST: emails-rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
 
-#  email-sender:
-#    container_name: email-sender
-#    image: jvmops/email-sender
-#    restart: "no"
-#    environment:
-#      SPRING_MAIN_WEB-APPLICATION-TYPE: NONE
-#      SPRING_DATA_MONGODB_HOST: mongo
-#      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: emails
-#      SPRING_DATA_MONGODB_USERNAME: email_api
-#      SPRING_DATA_MONGODB_PASSWORD: "${ADMIN_PASSWORD}"
-#      SPRING_MAIL_USERNAME: "${GMAIL_USERNAME}"
-#      SPRING_MAIL_PASSWORD: "${GMAIL_TOKEN}"
-#      # TODO: distributed queue
+  emails-sender:
+    container_name: emails-sender
+    build:
+      context: .
+      args:
+        - buildno
+        - gitcommithash
+    image: jvmops/emails-sender
+    restart: "no"
+    depends_on:
+      - emails-mongo
+      - emails-rabbitmq
+    environment:
+      SPRING_DATA_MONGODB_HOST: emails-mongo
+      SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE: emails
+      SPRING_DATA_MONGODB_USERNAME: sender
+      SPRING_DATA_MONGODB_PASSWORD: "${ADMIN_PASSWORD}"
+      SPRING_RABBITMQ_HOST: emails-rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
+  # TODO: https://min.io for storing attachments
