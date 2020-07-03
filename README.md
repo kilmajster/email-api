@@ -27,46 +27,6 @@ docker-compose up -d
 ```
 `/emails` endpoint is ready at: http://localhost:8080/emails
 
-## Manual tests:
-```
-# create new email:
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '{ "sender": "me@jvmops.com", "recipients": [ "you@jvmops.com" ], "topic": "Topic", "body": "Desc" }' \
-  http://localhost:8080/emails
-
-# check api logs:
-docker logs emails-api
-
-# check sender logs:
-docker logs emails-sender
-```
-
-## Test report
-```
- GET /emails - is paginated and defaults to first page PASSED
- GET /emails/{id} - retrieving email by an unknown ID result in 404 PASSED
- GET /emails/{id} - you can retrieve existing email by its id PASSED
-POST /emails - Validation - payload needs to be provided PASSED
-POST /emails - Validation - email sender can't be null PASSED
-POST /emails - Validation - email sender can't be an empty string PASSED
-POST /emails - Validation - email sender needs to be a valid email address PASSED
-POST /emails - Validation - email recipients might be null PASSED
-POST /emails - Validation - email recipients may be an empty set PASSED
-POST /emails - Validation - email recipients must contain valid email addresses PASSED
-POST /emails - Validation - email topic can't be empty PASSED
-POST /emails - Validation - mail body can't be empty PASSED
-POST /emails - if email was created expect its id to be returned PASSED
-POST /emails - created email can be retrieved through API by its id PASSED
-POST /emails - created email will have the lowest priority by default PASSED
-POST /emails - you can pass custom priority while creating email PASSED
-POST /emails - created email will get PENDING status PASSED
- GET /emails - pagination - test dataset contains multiple pages of emails PASSED
-
->> After email is dispatched, the message status will be updated to SENT PASSED
->> If message can't be sent leave its PENDING status be PASSED
-```
-
 ## Stats
 ```
 $ docker stats
@@ -80,4 +40,19 @@ $ docker images
 REPOSITORY               SIZE
 jvmops/emails-api        261MB
 jvmops/emails-sender     257MB
+```
+
+## Manual tests:
+```
+# create new email:
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{ "sender": "me@jvmops.com", "recipients": [ "you@jvmops.com" ], "topic": "Topic", "body": "Desc" }' \
+  http://localhost:8080/emails
+
+# check api logs:
+docker logs emails-api
+
+# check sender logs:
+docker logs emails-sender
 ```

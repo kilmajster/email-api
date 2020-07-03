@@ -4,7 +4,8 @@ email:
   api:
     time-offset: "+2"
 
-# testcontainers stuff (object API over docker for test Integration tests purposes)
+#testcontainers
+## (object API over docker for integration tests)
 embedded:
   mongodb:
     enabled: true
@@ -14,6 +15,7 @@ embedded:
 spring:
   data:
     mongodb:
+      #test-containers
       # this is for Spring to know what port Mongo started on (it's random)
       uri: mongodb://${embedded.mongodb.host}:${embedded.mongodb.port}/${embedded.mongodb.database}
       auto-index-creation: true

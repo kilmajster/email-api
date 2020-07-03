@@ -43,6 +43,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_JACKSON_DEFAULT-PROPERTY-INCLUSION: non_null
 
   emails-sender:
     container_name: emails-sender

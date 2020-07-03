@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +20,15 @@ import java.util.List;
 
 @EnableWebMvc
 @Configuration
-@EnableConfigurationProperties({ApiProperties.class})
+@EnableConfigurationProperties({ApiProperties.class, JacksonProperties.class})
 @Slf4j
 class Api implements WebMvcConfigurer {
 
     @Autowired
     private ApiProperties apiProperties;
+
+    @Autowired
+    private JacksonProperties jacksonProperties;
 
     @Bean
     Clock clock() {
@@ -33,9 +37,10 @@ class Api implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
-                .serializerByType(ObjectId.class, new ToStringSerializer());
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(builder.build());
-        converters.add(converter);
+        var mapper = new Jackson2ObjectMapperBuilder()
+                .serializerByType(ObjectId.class, new ToStringSerializer())
+                .serializationInclusion(jacksonProperties.getDefaultPropertyInclusion())
+                .build();
+        converters.add(new MappingJackson2HttpMessageConverter(mapper));
     }
 }

@@ -16,6 +16,6 @@ public class ApiProperties {
 
     @PostConstruct
     void log() {
-        log.info("Zone id: {}", timeOffset);
+        log.info("Time offset: {}", timeOffset);
     }
 }

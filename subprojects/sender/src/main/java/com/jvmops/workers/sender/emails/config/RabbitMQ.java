@@ -32,9 +32,7 @@ public class RabbitMQ {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitProperties.getHost(), rabbitProperties.getPort());
         connectionFactory.setUsername(rabbitProperties.getUsername());
         connectionFactory.setPassword(rabbitProperties.getPassword());
-
         log.info("Creating connection factory with: {}@{}:{}", rabbitProperties.getUsername(), rabbitProperties.getHost(), rabbitProperties.getPort());
-
         return connectionFactory;
     }
 
