@@ -1,5 +1,5 @@
 <h1 align="center">
-  email-api<br>
+  emails toolkit<br>
   <a href="https://github.com/jvmops/email-api/actions"><img align="center" src="https://github.com/jvmops/email-api/workflows/master/badge.svg"></a>
   <a href="https://codecov.io/gh/jvmops/email-api"><img align="center" src="https://codecov.io/gh/jvmops/email-api/branch/master/graph/badge.svg"></a>
   <a href="https://github.com/jvmops/email-api/blob/master/LICENSE"><img align="center" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
@@ -7,7 +7,9 @@
 </h1>
 
 ## Description
-This is a basic email API that allows to create email messages before they will be send.
+This emails toolkit consist of two apps:
+- **api** to create new emails without sending it
+- **sender** that delivers pending messages
 
 ## Building & Running:
 Requirements:
@@ -15,12 +17,11 @@ Requirements:
 - docker
 - docker-compose
 ```
-git clone https://github.com/jvmops/email-api.git
-
-cd email-api
-./gradlew build
-./gradlew dockerBuildImageApi
-./gradlew dockerBuildImageSender
+git clone https://github.com/jvmops/email-api.git \
+  && cd email-api \
+  && ./gradlew build \
+  && ./gradlew dockerBuildImageApi \
+  && ./gradlew dockerBuildImageSender
 
 docker-compose up -d
 ```
@@ -48,15 +49,16 @@ POST /emails - created email will get PENDING status PASSED
 ```
 
 ## Stats
-This API runtime after initial warmup takes only 110mb RAM
-
 ```
 $ docker stats
-CONTAINER NAME          MEM USAGE
-email-api               109.5MiB
-mongo                   77.36MiB
+NAME                 MEM USAGE
+emails-sender        91.22MiB
+emails-api           115MiB
+emails-rabbitmq      127.7MiB
+emails-mongo         78.59MiB
 
 $ docker images
-REPOSITORY              SIZE
-jvmops/email-api        261MB
+REPOSITORY               SIZE
+jvmops/emails-api        261MB
+jvmops/emails-sender     257MB
 ```

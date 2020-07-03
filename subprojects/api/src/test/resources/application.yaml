@@ -1,4 +1,4 @@
-name: email-api-tests
+name: emails-api-tests
 
 email:
   api:

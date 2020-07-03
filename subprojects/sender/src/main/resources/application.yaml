@@ -1,4 +1,4 @@
-name: email-sender
+name: emails-sender
 
 email:
   api:

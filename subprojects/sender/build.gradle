@@ -36,7 +36,7 @@ import com.bmuschko.gradle.docker.tasks.image.*
 
 task dockerBuildImageSender(type: DockerBuildImage) {
     inputDir = file("$project.rootDir/subprojects/sender")
-    images.add('jvmops/email-sender:latest')
+    images.add('jvmops/emails-sender:latest')
     dependsOn(bootJar)
 }
 

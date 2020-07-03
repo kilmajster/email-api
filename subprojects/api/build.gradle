@@ -31,7 +31,7 @@ import com.bmuschko.gradle.docker.tasks.image.*
 
 task dockerBuildImageApi(type: DockerBuildImage) {
     inputDir = file("$project.rootDir/subprojects/api")
-    images.add('jvmops/email-api:latest')
+    images.add('jvmops/emails-api:latest')
     dependsOn(bootJar)
 }
 
