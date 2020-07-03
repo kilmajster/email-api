@@ -1,18 +1,16 @@
 package com.jvmops.workers.sender.emails.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
 
-@Data
+@Document("emails")
+@EqualsAndHashCode(of = "id")
+@Value
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Email {
+public class EmailMessage {
     ObjectId id;
     String sender;
     Set<String> recipients;

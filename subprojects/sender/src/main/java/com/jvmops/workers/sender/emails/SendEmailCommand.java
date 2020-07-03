@@ -1,6 +1,8 @@
 package com.jvmops.workers.sender.emails;
 
-import com.jvmops.workers.sender.emails.model.Email;
+import com.jvmops.workers.sender.emails.model.EmailMessage;
+import com.jvmops.workers.sender.emails.ports.EmailMessageRepository;
+import com.jvmops.workers.sender.emails.ports.SmtpClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -12,10 +14,16 @@ import org.springframework.stereotype.Service;
 public class SendEmailCommand {
 
     private SmtpClient smtpClient;
+    private EmailMessageRepository emailMessageRepository;
 
     @RabbitListener(queues = "pendingEmails", containerFactory = "pendingEmailsListenerFactory")
-    public void send(Email pendingEmailMessage) {
-        Email email = new Email();
-        smtpClient.send(email);
+    public void send(EmailMessage emailMessage) {
+        try {
+            smtpClient.send(emailMessage);
+            emailMessageRepository.emailSent(emailMessage);
+        } catch (Throwable t) {
+            emailMessageRepository.error(emailMessage, t);
+            throw t;
+        }
     }
 }

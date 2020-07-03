@@ -1,7 +1,7 @@
 package com.jvmops.workers.sender.emails.adapters;
 
-import com.jvmops.workers.sender.emails.SmtpClient;
-import com.jvmops.workers.sender.emails.model.Email;
+import com.jvmops.workers.sender.emails.ports.SmtpClient;
+import com.jvmops.workers.sender.emails.model.EmailMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 @Profile("!prod")
 public class DummyClient implements SmtpClient {
     @Override
-    public void send(Email email) {
+    public void send(EmailMessage email) {
         log.info("It's only a dummy log!");
     }
 

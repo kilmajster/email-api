@@ -1,7 +1,7 @@
 package com.jvmops.workers.sender.emails.adapters;
 
-import com.jvmops.workers.sender.emails.SmtpClient;
-import com.jvmops.workers.sender.emails.model.Email;
+import com.jvmops.workers.sender.emails.ports.SmtpClient;
+import com.jvmops.workers.sender.emails.model.EmailMessage;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class GmailClient implements SmtpClient {
     private JavaMailSender emailSender;
 
     @Override
-    public void send(Email email) {
+    public void send(EmailMessage email) {
         try {
             MimeMessageWrapper message = prepareMessage(email.getTopic(), email.getBody());
             sendEmailToReceivers(message, email.getRecipients());

@@ -10,8 +10,6 @@ class EmailEventSpecification extends Specification {
 
     URI emailsEndpoint
 
-
-
     def setup() {
         setupEmailsEndpoint()
         this.emailMessages.deleteAll()
