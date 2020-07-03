@@ -26,6 +26,27 @@ bootJar {
     enabled = false
 }
 
+// Java 14, new switch, records, NullPointer messages!
+// TODO: refactor to ext {} with that map?
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "--enable-preview"
+}
+
+tasks.withType(Test) {
+    jvmArgs += [
+            '--enable-preview',
+            '-XX:+ShowCodeDetailsInExceptionMessages'
+    ]
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs += [
+            '--enable-preview',
+            '-XX:+ShowCodeDetailsInExceptionMessages'
+    ]
+}
+
 allprojects {
     repositories {
         mavenCentral()
@@ -62,7 +83,6 @@ subprojects {
 
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
         // tests
@@ -71,15 +91,13 @@ subprojects {
         testImplementation "org.spockframework:spock-spring:$spockVersion"
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+        // testcontainers is an object api for docker - I find it useful and fast for integration tests
         testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
         testImplementation "com.playtika.testcontainers:embedded-mongodb:$testcontainersEmbeddedMongoVersion"
         testImplementation "org.springframework.cloud:spring-cloud-starter"
     }
 
-    /**
-     * Test configuration
-     * # TODO: extract to separate file
-     */
+     // Tests
 
     jacocoTestReport {
         reports {
@@ -92,7 +110,7 @@ subprojects {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.0
+                    minimum = 0.3
                 }
             }
         }
@@ -111,6 +129,12 @@ subprojects {
         // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.logging.TestLoggingContainer.html
         testLogging {
             events "passed", "skipped", "failed"
+        }
+
+        afterTest { desc, result ->
+            if (result.resultType == 'FAILURE') {
+                throw new GradleException("Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}")
+            }
         }
 
         afterSuite { desc, result ->
