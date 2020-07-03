@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.jvmops.api.emails.EmailMessageApi.Converters.*;
 import static com.jvmops.api.emails.model.Status.PENDING;
 import static com.jvmops.api.emails.model.Priority.LOW;
 
@@ -31,7 +32,7 @@ public class EmailMessageApi {
     @RequestMapping("/{emailMessageId}")
     public EmailMessageDto emailMessage(@PathVariable ObjectId emailMessageId) {
         return fetchById()
-                .andThen(Converters.mapToDto(ConvertingStrategy.SINGLE_EMAIL))
+                .andThen(mapToDto(ConvertingStrategy.SINGLE_EMAIL))
                 .apply(emailMessageId);
     }
 
@@ -46,7 +47,7 @@ public class EmailMessageApi {
     @GetMapping
     public EmailMessagesDto emailMessages() {
         return fetchPage()
-                .andThen(Converters.mapPageToDto())
+                .andThen(mapPageToDto())
                 .apply(Pageable.unpaged());
     }
 
@@ -58,12 +59,12 @@ public class EmailMessageApi {
     public EmailMessageDto createEmailMessage(@RequestBody @Valid NewEmailMessageDto newEmailMessage) {
         return saveToDabase()
                 .andThen(putOnPendingEmailsQueue())
-                .andThen(Converters.mapToDto(ConvertingStrategy.ID))
+                .andThen(mapToDto(ConvertingStrategy.ID))
                 .apply(newEmailMessage);
     }
 
     private Function<NewEmailMessageDto, EmailMessage> saveToDabase() {
-        return Converters.mapToDomain()
+        return mapToDomain()
                 .andThen(emailMessageRepository::save);
     }
 
@@ -80,21 +81,23 @@ public class EmailMessageApi {
 
     public static class Converters {
         public static Function<Page<EmailMessage>, EmailMessagesDto> mapPageToDto() {
-            return (emailMessagePage) -> {
-                var emailMessagesDto = emailMessagePage.getContent().stream()
-                        .map(mapToDto(ConvertingStrategy.PAGE))
-                        .collect(Collectors.toList());
-
-                return EmailMessagesDto.builder()
-                        .pageNumber(emailMessagePage.getNumber())
-                        .maxPages(emailMessagePage.getTotalPages())
-                        .size(emailMessagePage.getSize())
-                        .emailMessages(emailMessagesDto)
-                        .build();
-            };
+            return Converters::mapPageToDto;
         }
 
-        private static Function<EmailMessage, EmailMessageDto> mapToDto(ConvertingStrategy convertingStrategy) {
+        private static EmailMessagesDto mapPageToDto(Page<EmailMessage> emailMessagePage) {
+            var emailMessagesDto = emailMessagePage.getContent().stream()
+                    .map(mapToDto(ConvertingStrategy.PAGE))
+                    .collect(Collectors.toList());
+
+            return EmailMessagesDto.builder()
+                    .pageNumber(emailMessagePage.getNumber())
+                    .maxPages(emailMessagePage.getTotalPages())
+                    .size(emailMessagePage.getSize())
+                    .emailMessages(emailMessagesDto)
+                    .build();
+        }
+
+        static Function<EmailMessage, EmailMessageDto> mapToDto(ConvertingStrategy convertingStrategy) {
             return (emailMessage) ->
                     switch (convertingStrategy) {
                         case ID -> EmailMessageDto.builder()
@@ -121,7 +124,7 @@ public class EmailMessageApi {
                     };
         }
 
-        private static Function<NewEmailMessageDto, EmailMessage> mapToDomain() {
+        static Function<NewEmailMessageDto, EmailMessage> mapToDomain() {
             return dto -> EmailMessage.builder()
                     .id(ObjectId.get())
                     .sender(dto.getSender())
