@@ -1,6 +1,7 @@
 package com.jvmops.workers.sender.emails;
 
 import com.jvmops.workers.sender.emails.model.EmailMessage;
+import com.jvmops.workers.sender.emails.model.PendingEmailMessage;
 import com.jvmops.workers.sender.emails.ports.EmailMessageRepository;
 import com.jvmops.workers.sender.emails.ports.SmtpClient;
 import lombok.AllArgsConstructor;
@@ -17,12 +18,15 @@ public class SendEmailCommand {
     private EmailMessageRepository emailMessageRepository;
 
     @RabbitListener(queues = "pendingEmails", containerFactory = "pendingEmailsListenerFactory")
-    public void send(EmailMessage emailMessage) {
+    public void send(PendingEmailMessage pendingMessage) {
         try {
+            EmailMessage emailMessage = emailMessageRepository.findById(pendingMessage.getId())
+                    .orElseThrow(() -> new IllegalArgumentException(String.format(
+                            "No such email message: %s", pendingMessage.getId())));
             smtpClient.send(emailMessage);
             emailMessageRepository.emailSent(emailMessage);
         } catch (Throwable t) {
-            emailMessageRepository.error(emailMessage, t);
+            emailMessageRepository.error(pendingMessage, t);
             throw t;
         }
     }

@@ -10,12 +10,14 @@ import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ErrorHandler;
 
 @EnableConfigurationProperties(RabbitProperties.class)
+@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "host")
 @Configuration
 @Slf4j
 public class RabbitMQ {
@@ -55,7 +57,7 @@ public class RabbitMQ {
     @Bean
     Queue emailMessages() {
         return QueueBuilder.durable(PENDING_EMAIL_QUEUE)
-                .maxPriority(5)
+                .maxPriority(10)
                 .build();
     }
 }

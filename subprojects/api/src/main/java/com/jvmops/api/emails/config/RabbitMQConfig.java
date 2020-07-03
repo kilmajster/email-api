@@ -26,7 +26,7 @@ public class RabbitMQConfig {
     @Bean
     Queue emailMessages() {
         return QueueBuilder.durable(PENDING_EMAIL_QUEUE)
-                .maxPriority(5)
+                .maxPriority(10)
                 .build();
     }
 }
