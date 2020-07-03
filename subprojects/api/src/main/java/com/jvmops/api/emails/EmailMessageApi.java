@@ -32,7 +32,7 @@ public class EmailMessageApi {
     @RequestMapping("/{emailMessageId}")
     public EmailMessageDto emailMessage(@PathVariable ObjectId emailMessageId) {
         return fetchById()
-                .andThen(mapToDto(ConvertingStrategy.SINGLE_EMAIL))
+                .andThen(mapToDto(ProjectionType.SINGLE_EMAIL))
                 .apply(emailMessageId);
     }
 
@@ -59,7 +59,7 @@ public class EmailMessageApi {
     public EmailMessageDto createEmailMessage(@RequestBody @Valid NewEmailMessageDto newEmailMessage) {
         return saveToDabase()
                 .andThen(putOnPendingEmailsQueue())
-                .andThen(mapToDto(ConvertingStrategy.ID))
+                .andThen(mapToDto(ProjectionType.ID))
                 .apply(newEmailMessage);
     }
 
@@ -75,7 +75,7 @@ public class EmailMessageApi {
         };
     }
 
-    enum ConvertingStrategy {
+    enum ProjectionType {
         PAGE, SINGLE_EMAIL, ID
     }
 
@@ -86,7 +86,7 @@ public class EmailMessageApi {
 
         private static EmailMessagesDto mapPageToDto(Page<EmailMessage> emailMessagePage) {
             var emailMessagesDto = emailMessagePage.getContent().stream()
-                    .map(mapToDto(ConvertingStrategy.PAGE))
+                    .map(mapToDto(ProjectionType.PAGE))
                     .collect(Collectors.toList());
 
             return EmailMessagesDto.builder()
@@ -97,9 +97,9 @@ public class EmailMessageApi {
                     .build();
         }
 
-        static Function<EmailMessage, EmailMessageDto> mapToDto(ConvertingStrategy convertingStrategy) {
+        static Function<EmailMessage, EmailMessageDto> mapToDto(ProjectionType projectionType) {
             return (emailMessage) ->
-                    switch (convertingStrategy) {
+                    switch (projectionType) {
                         case ID -> EmailMessageDto.builder()
                                 .id(emailMessage.getId())
                                 .build();
@@ -128,7 +128,7 @@ public class EmailMessageApi {
             return dto -> EmailMessage.builder()
                     .id(ObjectId.get())
                     .sender(dto.getSender())
-                    .recipients(dto.getRecipients())
+                    .recipients(dto.nullSafeRecipients())
                     .topic(dto.getTopic())
                     .body(dto.getBody())
                     .status(PENDING)

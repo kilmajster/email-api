@@ -39,4 +39,9 @@ public class NewEmailMessageDto {
     public Optional<Priority> optionalPrioryty() {
         return Optional.ofNullable(priority);
     }
+
+    @Transient
+    public Set<String> nullSafeRecipients() {
+        return recipients == null ? Set.of() : recipients;
+    }
 }
