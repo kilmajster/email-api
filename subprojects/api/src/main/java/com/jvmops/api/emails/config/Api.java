@@ -1,5 +1,6 @@
 package com.jvmops.api.emails.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,8 +20,11 @@ import java.time.Clock;
 import java.time.ZoneId;
 import java.util.List;
 
-@EnableWebMvc
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+
 @Configuration
+@Order(HIGHEST_PRECEDENCE)
+@EnableWebMvc
 @EnableConfigurationProperties({ApiProperties.class, JacksonProperties.class})
 @Slf4j
 class Api implements WebMvcConfigurer {
@@ -35,12 +40,16 @@ class Api implements WebMvcConfigurer {
         return Clock.system(ZoneId.of(apiProperties.getTimeOffset()));
     }
 
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        var mapper = new Jackson2ObjectMapperBuilder()
+    @Bean
+    ObjectMapper emailsObjectMapper() {
+        return new Jackson2ObjectMapperBuilder()
                 .serializerByType(ObjectId.class, new ToStringSerializer())
                 .serializationInclusion(jacksonProperties.getDefaultPropertyInclusion())
                 .build();
-        converters.add(new MappingJackson2HttpMessageConverter(mapper));
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new MappingJackson2HttpMessageConverter(emailsObjectMapper()));
     }
 }

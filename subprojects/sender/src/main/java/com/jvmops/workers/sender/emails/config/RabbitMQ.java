@@ -1,6 +1,9 @@
 package com.jvmops.workers.sender.emails.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -11,12 +14,14 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.ErrorHandler;
 
-@EnableConfigurationProperties(RabbitProperties.class)
+@EnableConfigurationProperties({RabbitProperties.class, JacksonProperties.class})
 @ConditionalOnProperty(prefix = "spring.rabbitmq", name = "host")
 @Configuration
 @Slf4j
@@ -26,6 +31,9 @@ public class RabbitMQ {
 
     @Autowired
     private RabbitProperties rabbitProperties;
+
+    @Autowired
+    private JacksonProperties jacksonProperties;
 
     @Bean
     public ConnectionFactory rabbitConnectionFactory() {
@@ -37,6 +45,14 @@ public class RabbitMQ {
     }
 
     @Bean
+    ObjectMapper emailsObjectMapper() {
+        return new Jackson2ObjectMapperBuilder()
+                .serializerByType(ObjectId.class, new ToStringSerializer())
+                .serializationInclusion(jacksonProperties.getDefaultPropertyInclusion())
+                .build();
+    }
+
+    @Bean
     public SimpleRabbitListenerContainerFactory pendingEmailsListenerFactory() {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(rabbitConnectionFactory());
@@ -44,7 +60,10 @@ public class RabbitMQ {
         factory.setConcurrentConsumers(2);
         factory.setMaxConcurrentConsumers(4);
         factory.setReceiveTimeout(2000L);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        Jackson2JsonMessageConverter messageConverter = new Jackson2JsonMessageConverter(emailsObjectMapper());
+        factory.setMessageConverter(messageConverter);
+
+
         return factory;
     }
 

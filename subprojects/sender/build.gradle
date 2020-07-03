@@ -38,6 +38,9 @@ task dockerBuildImageSender(type: DockerBuildImage) {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude module: "spring-boot-starter-tomcat"
+    }
 }
 
 // for github actions and seamless dockerhub integration
