@@ -1,8 +1,9 @@
 package com.jvmops.api.emails.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
 import javax.validation.constraints.Email;
@@ -14,9 +15,9 @@ import java.util.Set;
 
 @EqualsAndHashCode(of = {"id"})
 @Data
-@AllArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 public class NewEmailMessageDto {
-
     ObjectId id;
 
     Priority priority;
