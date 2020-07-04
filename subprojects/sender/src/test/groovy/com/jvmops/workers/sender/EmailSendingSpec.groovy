@@ -5,7 +5,7 @@ import com.jvmops.workers.sender.emails.adapters.DummyClient
 import com.jvmops.workers.sender.emails.adapters.HighThroughputClient
 import com.jvmops.workers.sender.emails.model.EmailMessage
 import com.jvmops.workers.sender.emails.model.PendingEmailMessage
-import com.jvmops.workers.sender.emails.model.Priority
+
 import com.jvmops.workers.sender.emails.model.Status
 import com.jvmops.workers.sender.emails.ports.EmailMessageRepository
 import com.jvmops.workers.sender.emails.ports.SmtpClient
@@ -85,7 +85,7 @@ class EmailSendingSpec extends Specification {
                 .topic("Some irrelevant test email")
                 .body("Even move irrelevant stuff is here do not bother to read it.")
                 .status(Status.PENDING)
-                .priority(Priority.LOW)
+                .priority(0)
                 .build()
     }
 

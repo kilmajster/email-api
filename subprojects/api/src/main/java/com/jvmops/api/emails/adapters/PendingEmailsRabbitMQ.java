@@ -1,5 +1,6 @@
 package com.jvmops.api.emails.adapters;
 
+import com.jvmops.api.emails.model.EmailMessageDto;
 import com.jvmops.api.emails.ports.PendingEmailsQueue;
 import com.jvmops.api.emails.model.EmailMessage;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,10 @@ class PendingEmailsRabbitMQ implements PendingEmailsQueue {
     @Override
     public void offer(EmailMessage email) {
         log.info("Transferring email message on a sending queue. Priority: {}, id: {}", email.getPriority(), email.getId());
-        rabbitTemplate.convertAndSend(PENDING_EMAIL_QUEUE, email);
+        EmailMessageDto pendingEmail = EmailMessageDto.builder()
+                .id(email.getId())
+                .priority(email.getPriority())
+                .build();
+        rabbitTemplate.convertAndSend(PENDING_EMAIL_QUEUE, pendingEmail);
     }
 }
