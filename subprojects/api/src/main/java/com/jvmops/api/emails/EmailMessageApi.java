@@ -8,7 +8,11 @@ import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static com.jvmops.api.emails.EmailMessageApi.Converters.*;
 import static com.jvmops.api.emails.model.Status.PENDING;
-import static com.jvmops.api.emails.model.Priority.LOW;
 
 @RestController
 @RequestMapping("/emails")
@@ -30,10 +33,11 @@ public class EmailMessageApi {
 
     @GetMapping
     @RequestMapping("/{emailMessageId}")
-    public EmailMessageDto emailMessage(@PathVariable ObjectId emailMessageId) {
+    public ResponseEntity<EmailMessageDto> emailMessage(@PathVariable ObjectId emailMessageId) {
         return fetchById()
                 .andThen(mapToDto(ProjectionType.SINGLE_EMAIL))
-                .apply(emailMessageId);
+                .andThen(toResponseEntity(HttpStatus.OK))
+                 .apply(emailMessageId);
     }
 
     private Function<ObjectId, EmailMessage> fetchById() {
@@ -41,13 +45,31 @@ public class EmailMessageApi {
                 .orElseThrow(() -> new EmailMessageNotFound(id));
     }
 
+    private <T extends Document> Function<T, ResponseEntity<T>> toResponseEntity(HttpStatus httpStatus) {
+        return document -> getBody(httpStatus, document);
+    }
+
+    private <T extends Document> ResponseEntity<T> getBody(HttpStatus httpStatus, T document) {
+        BodyBuilder bodyBuilder = ResponseEntity.status(httpStatus);
+
+        // TODO: new instanceof pattern matching doesnt work with gradle java plugin? try it
+        if (document instanceof VersionedDocument) {
+            VersionedDocument versionedDocument = (VersionedDocument) document;
+            bodyBuilder.eTag(versionedDocument.eTag());
+        }
+        return bodyBuilder
+                .body(document);
+    }
+
+
     /**
      * TODO: Implement pagination
      */
     @GetMapping
-    public EmailMessagesDto emailMessages() {
+    public ResponseEntity<EmailMessagesDto> emailMessages() {
         return fetchPage()
                 .andThen(mapPageToDto())
+                .andThen(toResponseEntity(HttpStatus.OK))
                 .apply(Pageable.unpaged());
     }
 
@@ -85,16 +107,16 @@ public class EmailMessageApi {
         }
 
         private static EmailMessagesDto mapPageToDto(Page<EmailMessage> emailMessagePage) {
-            var emailMessagesDto = emailMessagePage.getContent().stream()
+            var projection = emailMessagePage.getContent().stream()
                     .map(mapToDto(ProjectionType.PAGE))
                     .collect(Collectors.toList());
 
-            return EmailMessagesDto.builder()
-                    .pageNumber(emailMessagePage.getNumber())
-                    .maxPages(emailMessagePage.getTotalPages())
-                    .size(emailMessagePage.getSize())
-                    .emailMessages(emailMessagesDto)
-                    .build();
+            var page = new PageImpl<>(
+                    projection,
+                    emailMessagePage.getPageable(),
+                    emailMessagePage.getNumberOfElements());
+
+            return new EmailMessagesDto(page);
         }
 
         static Function<EmailMessage, EmailMessageDto> mapToDto(ProjectionType projectionType) {
@@ -138,7 +160,7 @@ public class EmailMessageApi {
 
         private static Priority lowPriorityIfNull(NewEmailMessageDto dto) {
             return dto.optionalPrioryty()
-                    .orElse(LOW);
+                    .orElse(Priority.LOW);
         }
     }
 }

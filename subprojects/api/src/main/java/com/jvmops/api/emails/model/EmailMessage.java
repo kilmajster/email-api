@@ -13,7 +13,7 @@ import java.util.Set;
 @Value
 @EqualsAndHashCode(of = "id")
 @Builder
-public class EmailMessage {
+public class EmailMessage implements VersionedDocument {
     @Id
     ObjectId id;
     String sender;

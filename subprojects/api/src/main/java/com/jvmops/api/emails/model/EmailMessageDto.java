@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class EmailMessageDto extends NewEmailMessageDto {
+public class EmailMessageDto extends NewEmailMessageDto implements VersionedDocument {
     Status status;
-    Long version;
+    transient Long version;
 }

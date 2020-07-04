@@ -41,6 +41,7 @@ task dockerBuildImageApi(type: DockerBuildImage) {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'com.google.guava:guava:29.0-jre'
 }
 
 // for github actions and seamless dockerhub integration
