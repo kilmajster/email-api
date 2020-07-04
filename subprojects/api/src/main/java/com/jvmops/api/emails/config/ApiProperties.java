@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 @Getter
 @Slf4j
 public class ApiProperties {
-    private String timeOffset = "+5";
+    private String timeOffset = "+2";
 
     @PostConstruct
     void log() {

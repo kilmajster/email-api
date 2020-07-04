@@ -67,7 +67,7 @@ public class RabbitMQ {
         return factory;
     }
 
-    public ErrorHandler errorHandler() {
+    private ErrorHandler errorHandler() {
         return new ConditionalRejectingErrorHandler();
     }
 
